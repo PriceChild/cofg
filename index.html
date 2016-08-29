@@ -103,7 +103,7 @@
                 divobj.innerHTML = "All Up Mass: " + weights + " lbs.";
 
                 var divobj = document.getElementById('emptyCOFG');
-                divobj.innerHTML = "Empty COFG: " + zfglon + ", " + zfglat;
+                divobj.innerHTML = "Empty COFG: " + zfglon.toFixed(2) + ", " + zfglat.toFixed(2);
 
                 var mainweight = parseFloat(theForm.elements["main"].value)*6;
                 var mainlatarm = -11;
@@ -120,7 +120,7 @@
                 togwlon = lonmoments/weights;
 
                 var divobj = document.getElementById('fullCOFG');
-                divobj.innerHTML = "Fueled COFG: " + togwlon + ", " + togwlat;
+                divobj.innerHTML = "Fueled COFG: " + togwlon.toFixed(2) + ", " + togwlat.toFixed(2);
 
             };
             function calculateCoordinates(canvas, max, min, value){
