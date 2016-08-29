@@ -1,0 +1,184 @@
+<html>
+    <head>
+        <script type="text/javascript">
+            var weights = 0;
+            var lonmoments = 0;
+            var latmoments = 0;
+
+            var zfgweights = 0;
+            var zfglat = 0;
+            var zfglon = 0;
+
+            var togwweights = 0;
+            var togwlat = 0;
+            var togwlon = 0;
+            
+            function updateTotals(latarm, lonarm, weight) {
+                weights = weights + weight;
+                lonmoments = lonmoments + lonarm*weight;
+                latmoments = latmoments + latarm*weight;
+            };
+            function calculateTotals() {
+                weights = 0;
+                lonmoments = 0;
+                latmoments = 0;
+
+                var theForm = document.forms["balanceform"];
+
+                var bem = parseFloat(theForm.elements["bem"].value);
+                var latemptycofg = parseFloat(theForm.elements["latemptycofg"].value);
+                var lonemptycofg = parseFloat(theForm.elements["lonemptycofg"].value);
+
+                updateTotals(latemptycofg, lonemptycofg, bem);
+
+                var dualsinstalled = theForm.elements["dualsinstalled"].checked;
+                if(dualsinstalled)
+                {
+
+                    var dualsweight = 2.6;
+                    var dualslatarm = -12.88;
+                    var dualslonarm = 66.27;
+                    updateTotals(dualslatarm, dualslonarm, dualsweight);
+                };
+
+                var pilotweight = parseFloat(theForm.elements["pilot"].value);
+                var pilotlatarm = 10.7;
+                var pilotlonarm = 78;
+                updateTotals(pilotlatarm, pilotlonarm, pilotweight);
+
+                var passengerweight = parseFloat(theForm.elements["passenger"].value);
+                var passengerlatarm = -9.3;
+                var passengerlonarm = 78;
+                updateTotals(passengerlatarm, passengerlonarm, passengerweight);
+
+
+                var leftdoorinstalled = theForm.elements["leftdoorinstalled"].checked;
+                if(leftdoorinstalled)
+                {
+
+                    var doorweight = 5.2;
+                    var doorlatarm = 21;
+                    var doorlonarm = 77.5;
+                    updateTotals(doorlatarm, doorlonarm, doorweight);
+                };
+
+                var rightdoorinstalled = theForm.elements["rightdoorinstalled"].checked;
+                if(rightdoorinstalled)
+                {
+
+                    var doorweight = 5.2;
+                    var doorlatarm = -21;
+                    var doorlonarm = 77.5;
+                    updateTotals(doorlatarm, doorlonarm, doorweight);
+                };
+
+                zfgweights = weights;
+                zfglat = latmoments/weights;
+                zfglon = lonmoments/weights;
+
+                var divobj = document.getElementById('AUM');
+                divobj.innerHTML = "All Up Mass: " + weights + " lbs.";
+
+                var divobj = document.getElementById('emptyCOFG');
+                divobj.innerHTML = "Empty COFG: " + zfglon + ", " + zfglat;
+
+                var mainweight = parseFloat(theForm.elements["main"].value)*6;
+                var mainlatarm = -11;
+                var mainlonarm = 108.6;
+                updateTotals(mainlatarm, mainlonarm, mainweight);
+
+                var auxweight = parseFloat(theForm.elements["aux"].value)*6;
+                var auxlatarm = 11.2;
+                var auxlonarm = 103.8;
+                updateTotals(auxlatarm, auxlonarm, auxweight);
+
+                togwweights = weights;
+                togwlat = latmoments/weights;
+                togwlon = lonmoments/weights;
+
+                var divobj = document.getElementById('fullCOFG');
+                divobj.innerHTML = "Fueled COFG: " + togwlon + ", " + togwlat;
+
+            };
+            function calculateCoordinates(canvas, max, min, value){
+                var realwidth = max-min;
+                var realdiff = value-min;
+                var alongpercentage = realdiff/realwidth
+                return alongpercentage*canvas;
+            };
+            function drawGraph(){
+                var c = document.getElementById("loncanvas");
+                var ctx = c.getContext("2d");
+
+                var lonmaxw = 103;
+                var lonminw = 95;
+                var lonmaxh = 1400;
+                var lonminh = 900;
+
+                var coordinates = [[95.5, 920], [95.5, 1225], [96.5, 1300], [100, 1300], [101.5, 1130], [101.5, 920]];
+
+                canvaswidth = loncanvas.scrollWidth;
+                canvasheight = loncanvas.scrollHeight;
+
+                ctx.beginPath();
+                ctx.moveTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, coordinates[0][0]),calculateCoordinates(canvasheight, lonmaxh, lonminh, coordinates[0][1]));
+                for (var i=1, coordinate; coordinate = coordinates[i]; i++) {
+                    ctx.lineTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, coordinate[0]),calculateCoordinates(canvasheight, lonmaxh, lonminh, coordinate[1]));
+                };
+                ctx.lineTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, coordinates[0][0]),calculateCoordinates(canvasheight, lonmaxh, lonminh, coordinates[0][1]));
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.moveTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, zfglon),calculateCoordinates(canvasheight, lonmaxh, lonminh, zfgweights));
+                ctx.lineTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, togwlon),calculateCoordinates(canvasheight, lonmaxh, lonminh, togwweights));
+                ctx.stroke();
+                ctx.closePath();
+            };
+            function updatePage(){
+                calculateTotals();
+                drawGraph();
+            };
+
+        </script>
+    </head>
+    <body onload="updatePage()">
+        <form id="balanceform">
+            <legend>Aircraft Details:</legend>
+            <label>BEM</label>
+            <input type="number" step="0.1" id="bem" name="bem" value="880" onchange="updatePage()"/>
+            <br/>
+            <label>Empty cofg lat</label>
+            <input type="number" step="0.1" id="latemptycofg" name="latemptycofg" value="-0.1" onchange="updatePage()"/>
+            <label>Empty cofg lon</label>
+            <input type="number" step="0.1" id="lonemptycofg" name="lonemptycofg" value="104" onchange="updatePage()"/>
+
+            <legend>Occupant & baggage weights:</legend>
+            <label>Pilot</label>
+            <input type="number" step="0.1" id="pilot" name="pilot" value="180" onchange="updatePage()"/>
+            <label>Passenger</label>
+            <input type="number" step="0.1" id="passenger" name="passenger" value="0" onchange="updatePage()"/>
+            <br/>
+            <legend>Fuel:</legend>
+            <label>Main</label>
+            <input type="number" id="main" name="main" value="0" onchange="updatePage()"/>
+            <label>Aux</label>
+            <input type="number" id="aux" name="aux" value="0" onchange="updatePage()"/>
+            <br/>
+
+            <legend>Extras:</legend>
+            <input type="checkbox" id="dualsinstalled" name="dualsinstalled" onclick="updatePage()"/>
+            Duals Installed?
+            <br/>
+            <input type="checkbox" id="leftdoorinstalled" name="leftdoorinstalled" onclick="updatePage()"/>
+            Left Door On?
+            <input type="checkbox" id="rightdoorinstalled" name="rightdoorinstalled" onclick="updatePage()"/>
+            Right Door On?
+        </form>
+        <p>
+        <div id="AUM"></div>
+        <div id="emptyCOFG"></div>
+        <div id="fullCOFG"></div>
+        <canvas id="loncanvas" width="320" height="250" style="border:1px solid #d3d3d3;background:#ffffff"></canvas>
+    </body>
+</html>
