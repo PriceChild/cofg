@@ -194,3 +194,6 @@ function updatePage(){
     drawGraph();
     checkLimits();
 };
+function pageLoad(){
+    updatePage();
+};
