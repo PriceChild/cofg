@@ -60,6 +60,30 @@ function pointinpolygon(point, vs) {
     return inside;
 };
 
+/*
+   getParameter was fetched from the following URL on 2016-08-30:
+   https://github.com/ryanburgess/get-parameter
+
+   It was distributed with the following license:
+
+   MIT © Ryan Burgess (http://github.com/ryanburgess)
+*/
+function getParameter(name){
+  'use strict';
+  var queryDict = {};
+  var queries = location.search.substr(1).split('&');
+  for (var i=0; i<queries.length; i++) {
+    queryDict[queries[i].split('=')[0]] = decodeURIComponent(queries[i].split('=')[1]);
+  } 
+
+  // if name specified, return that specific get parameter
+  if (name) {
+    return queryDict.hasOwnProperty(name) ? decodeURIComponent(queryDict[name].replace(/\+/g, ' ')) : '';
+  }
+
+  return queryDict;
+};
+
 function updateTotals(latarm, lonarm, weight) {
     weights = weights + weight;
     lonmoments = lonmoments + lonarm*weight;
@@ -93,7 +117,7 @@ function calculateTotals() {
     var pilotlonarm = 78;
     updateTotals(pilotlatarm, pilotlonarm, pilotweight);
 
-    var passengerweight = parseFloat(theForm.elements["passenger"].value);
+    var passengerweight = parseFloat(theForm.elements["passenger1"].value);
     var passengerlatarm = -9.3;
     var passengerlonarm = 78;
     updateTotals(passengerlatarm, passengerlonarm, passengerweight);
@@ -222,5 +246,13 @@ function updatePage(){
     checkLimits();
 };
 function pageLoad(){
+    var theForm = document.forms["balanceform"];
+    var items = ["bem", "latemptycofg", "lonemptycofg", "pilot", "passenger1", "main", "aux", "dualsinstalled", "leftdoorinstalled", "rightdoorinstalled"]
+    for (var i=0, item; item=items[i]; i++) {
+        var value = getParameter(item);
+        if(value){
+            theForm.elements["bem"].value = value;
+        };
+    };
     updatePage();
 };
