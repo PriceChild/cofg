@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <script type="text/javascript" src="cofg.js"></script>
+    </head>
+    <body onload="updatePage()">
+        <form id="balanceform">
+            <legend>Aircraft Details:</legend>
+            <label>BEM</label>
+            <input type="number" step="0.1" id="bem" name="bem" value="880" onchange="updatePage()"/>
+            <br/>
+            <label>Empty cofg lat</label>
+            <input type="number" step="0.1" id="latemptycofg" name="latemptycofg" value="-0.1" onchange="updatePage()"/>
+            <label>Empty cofg lon</label>
+            <input type="number" step="0.1" id="lonemptycofg" name="lonemptycofg" value="104" onchange="updatePage()"/>
+
+            <legend>Occupant & baggage weights:</legend>
+            <label>Pilot</label>
+            <input type="number" id="pilot" name="pilot" value="180" onchange="updatePage()"/>
+            <label>Passenger</label>
+            <input type="number" id="passenger" name="passenger" value="0" onchange="updatePage()"/>
+            <br/>
+            <legend>Fuel:</legend>
+            <label>Main</label>
+            <input type="number" id="main" name="main" value="8" max="18.3" min="0" onchange="updatePage()"/>
+            <label>Aux</label>
+            <input type="number" id="aux" name="aux" value="4" max="9.7" min="0" onchange="updatePage()"/>
+            <br/>
+
+            <legend>Extras:</legend>
+            <input type="checkbox" id="dualsinstalled" name="dualsinstalled" onclick="updatePage()" checked/>
+            Duals Installed?
+            <br/>
+            <input type="checkbox" id="leftdoorinstalled" name="leftdoorinstalled" onclick="updatePage()" checked/>
+            Left Door On?
+            <input type="checkbox" id="rightdoorinstalled" name="rightdoorinstalled" onclick="updatePage()" checked/>
+            Right Door On?
+        </form>
+        <p>
+        <div id="emptyCOFG"></div>
+        <div id="fullCOFG"></div>
+        <div id="inlimits"></div>
+        <canvas id="loncanvas" width="320" height="250" style="border:1px solid #d3d3d3;background:#ffffff"></canvas>
+        <canvas id="latcanvas" width="320" height="250" style="border:1px solid #d3d3d3;background:#ffffff"></canvas>
+    </body>
+</html>
