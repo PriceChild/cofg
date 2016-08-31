@@ -3,12 +3,16 @@ var lonmoments = 0;
 var latmoments = 0;
 
 var zfgweights = 0;
-var zfglat = 0;
-var zfglon = 0;
+var zfg = {
+    'lat': 0,
+    'lon': 0,
+}
 
 var togwweights = 0;
-var togwlat = 0;
-var togwlon = 0;
+var togw = {
+    'lat': 0,
+    'lon': 0,
+}
 
 var latcoordinates = [[95.5, -0.8], [95.5, 1], [98, 2.6], [101.5, 1.2], [101.5, -0.7], [97.5, -2.2], [97, -2.2]];
 var loncoordinates = [[95.5, 920], [95.5, 1275], [96.5, 1370], [100, 1370], [101.5, 1175], [101.5, 920]];
@@ -206,11 +210,11 @@ function calculateTotals() {
     };
 
     zfgweights = weights;
-    zfglat = latmoments/weights;
-    zfglon = lonmoments/weights;
+    zfg['lat'] = latmoments/weights;
+    zfg['lon'] = lonmoments/weights;
 
     var divobj = document.getElementById('emptyCOFG');
-    divobj.innerHTML = "Empty COFG: " + zfglon.toFixed(2) + ", " + zfglat.toFixed(2) + " - " + zfgweights + "lbs";
+    divobj.innerHTML = "Empty COFG: " + zfg['lon'].toFixed(2) + ", " + zfg['lat'].toFixed(2) + " - " + zfgweights + "lbs";
 
     var mainweight = parseFloat(theForm.elements["main"].value)*6;
     var mainlatarm = -11;
@@ -223,11 +227,11 @@ function calculateTotals() {
     updateTotals(auxlatarm, auxlonarm, auxweight);
 
     togwweights = weights;
-    togwlat = latmoments/weights;
-    togwlon = lonmoments/weights;
+    togw['lat'] = latmoments/weights;
+    togw['lon'] = lonmoments/weights;
 
     var divobj = document.getElementById('fullCOFG');
-    divobj.innerHTML = "Fueled COFG: " + togwlon.toFixed(2) + ", " + togwlat.toFixed(2) + " - " + togwweights + "lbs";
+    divobj.innerHTML = "Fueled COFG: " + togw['lon'].toFixed(2) + ", " + togw['lat'].toFixed(2) + " - " + togwweights + "lbs";
 
 };
 function calculateCoordinates(canvas, max, min, value){
@@ -237,63 +241,70 @@ function calculateCoordinates(canvas, max, min, value){
     return alongpercentage*canvas;
 };
 function drawGraph(){
-    var c = document.getElementById("loncanvas");
-    var ctx = c.getContext("2d");
 
-    ctx.clearRect(0, 0, c.width, c.height);
+    var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var model = theForm.elements["model"].value;
 
-    var lonmaxw = 103;
-    var lonminw = 95;
-    var lonmaxh = 1400;
-    var lonminh = 900;
+    for (var dimension of ['lat', 'lon']) {
+        var c = document.getElementById(dimension + "canvas");
+        var ctx = c.getContext("2d");
 
+        ctx.clearRect(0, 0, c.width, c.height);
 
-    var canvaswidth = c.scrollWidth;
-    var canvasheight = c.scrollHeight;
+        var bounds = aircraft[type][model]['bounds'][dimension];
 
-    ctx.beginPath();
-    ctx.moveTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, loncoordinates[0][0]),calculateCoordinates(canvasheight, lonmaxh, lonminh, loncoordinates[0][1]));
-    for (var i=1, coordinate; coordinate = loncoordinates[i]; i++) {
-        ctx.lineTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, coordinate[0]),calculateCoordinates(canvasheight, lonmaxh, lonminh, coordinate[1]));
+        var maxw = bounds[0][0];
+        var minw = bounds[0][0];
+        var maxh = bounds[0][1];
+        var minh = bounds[0][1];
+        for (var i=0, item; item=bounds[i]; i++) {
+            var x = item[0];
+            var y = item[1];
+            if (x > maxw) {
+                maxw = x;
+            };
+            if (x < minw) {
+                minw = x;
+            };
+            if (y > maxh) {
+                maxh = y;
+            };
+            if (y < minh) {
+                minh = y;
+            };
+        };
+        maxw = maxw + (maxw-minw)*0.05;
+        minw = minw - (maxw-minw)*0.05;
+        maxh = maxh + (maxh-minh)*0.05;
+        minh = minh - (maxh-minh)*0.05;
+        
+        var canvaswidth = c.scrollWidth;
+        var canvasheight = c.scrollHeight;
+
+        ctx.beginPath();
+        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, bounds[0][0]),calculateCoordinates(canvasheight, maxh, minh, bounds[0][1]));
+        for (var i=1, coordinate; coordinate = bounds[i]; i++) {
+            ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, coordinate[0]),calculateCoordinates(canvasheight, maxh, minh, coordinate[1]));
+        };
+        ctx.closePath();
+        ctx.stroke();
+
+        if (dimension == 'lon'){
+            var zfgy = zfgweights;
+            var togwy = togwweights;
+        } else {
+            var zfgy = zfg['lat'];
+            var togwy = togw['lat'];
+        }
+        ctx.beginPath();
+        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, zfg['lon']),calculateCoordinates(canvasheight, maxh, minh, zfgy));
+        ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, togw['lon']),calculateCoordinates(canvasheight, maxh, minh, togwy));
+        ctx.stroke();
     };
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, zfglon),calculateCoordinates(canvasheight, lonmaxh, lonminh, zfgweights));
-    ctx.lineTo(calculateCoordinates(canvaswidth, lonmaxw, lonminw, togwlon),calculateCoordinates(canvasheight, lonmaxh, lonminh, togwweights));
-    ctx.stroke();
-
-    var c = document.getElementById("latcanvas");
-    var ctx = c.getContext("2d");
-
-    ctx.clearRect(0, 0, c.width, c.height);
-
-    var latmaxw = 103;
-    var latminw = 95;
-    var latmaxh = 3;
-    var latminh = -3;
-
-
-    var canvaswidth = c.scrollWidth;
-    var canvasheight = c.scrollHeight;
-
-    ctx.beginPath();
-    ctx.moveTo(calculateCoordinates(canvaswidth, latmaxw, latminw, latcoordinates[0][0]),calculateCoordinates(canvasheight, latmaxh, latminh, latcoordinates[0][1]));
-    for (var i=1, latcoordinate; coordinate = latcoordinates[i]; i++) {
-        ctx.lineTo(calculateCoordinates(canvaswidth, latmaxw, latminw, coordinate[0]),calculateCoordinates(canvasheight, latmaxh, latminh, coordinate[1]));
-    };
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(calculateCoordinates(canvaswidth, latmaxw, latminw, zfglon),calculateCoordinates(canvasheight, latmaxh, latminh, zfglat));
-    ctx.lineTo(calculateCoordinates(canvaswidth, latmaxw, latminw, togwlon),calculateCoordinates(canvasheight, latmaxh, latminh, togwlat));
-    ctx.stroke();
-
 };
 function checkLimits(){
-    var inlimits = pointinpolygon([zfglon, zfglat], latcoordinates) && pointinpolygon([togwlon, togwlat], latcoordinates) && pointinpolygon([zfglon, zfgweights], loncoordinates) && pointinpolygon([togwlon, togwweights], loncoordinates);
+    var inlimits = pointinpolygon([zfg['lon'], zfg['lat']], latcoordinates) && pointinpolygon([togw['lon'], togw['lat']], latcoordinates) && pointinpolygon([zfg['lon'], zfgweights], loncoordinates) && pointinpolygon([togw['lon'], togwweights], loncoordinates);
     var divobj = document.getElementById('inlimits');
     if(inlimits){
         divobj.innerHTML = "<div style='color:green'>All OK!</div>";
