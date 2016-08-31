@@ -240,10 +240,23 @@ function checkLimits(){
 
     };
 };
+function bookmarkLink(){
+    var theForm = document.forms["balanceform"];
+
+    var divobj = document.getElementById('bookmark');
+    var html = "Bookmark this link to save this aircraft's configuration: <a href='?"
+    var items = ["bem", "latemptycofg", "lonemptycofg"]
+    for (var i=0, item; item=items[i]; i++) {
+        html = html + item + "=" + theForm.elements[item].value + "&"
+    };
+    html = html + "'>linky</a>";
+    divobj.innerHTML = html;
+};
 function updatePage(){
     calculateTotals();
     drawGraph();
     checkLimits();
+    bookmarkLink();
 };
 function pageLoad(){
     var theForm = document.forms["balanceform"];
