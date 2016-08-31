@@ -251,7 +251,7 @@ function pageLoad(){
     for (var i=0, item; item=items[i]; i++) {
         var value = getParameter(item);
         if(value){
-            theForm.elements["bem"].value = value;
+            theForm.elements[item].value = value;
         };
     };
     updatePage();
