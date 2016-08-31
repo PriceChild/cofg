@@ -234,9 +234,9 @@ function checkLimits(){
     var inlimits = pointinpolygon([zfglon, zfglat], latcoordinates) && pointinpolygon([togwlon, togwlat], latcoordinates) && pointinpolygon([zfglon, zfgweights], loncoordinates) && pointinpolygon([togwlon, togwweights], loncoordinates);
     var divobj = document.getElementById('inlimits');
     if(inlimits){
-        divobj.innerHTML = "All OK!";
+        divobj.innerHTML = "<div style='color:green'>All OK!</div>";
     } else {
-        divobj.innerHTML = "Out of limits!!!";
+        divobj.innerHTML = "<strong style='color:red'>Out of limits!!!</strong>";
 
     };
 };
