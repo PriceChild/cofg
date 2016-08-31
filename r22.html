@@ -4,6 +4,13 @@
     </head>
     <body onload="pageLoad()">
         <form id="balanceform">
+            <legend>Aircraft:</legend>
+            <label>R22</label>
+            <input type="radio" name="type" value="r22" onchange="pageLoad()" checked>
+            <label>R44</label>
+            <input type="radio" name="type" value="r44" onchange="pageLoad()">
+            <div id="models"></div>
+
             <legend>Aircraft Details:</legend>
             <label>BEM</label>
             <input type="number" step="0.1" id="bem" name="bem" value="880" onchange="updatePage()"/>

@@ -84,6 +84,68 @@ function getParameter(name){
   return queryDict;
 };
 
+var aircraft = {
+    'r22': {
+        'standard':{
+            'bounds':{
+                'lat': [[95.5, -0.8], [95.5, 1], [98, 2.6], [101.5, 1.2], [101.5, -0.7], [97.5, -2.2], [97, -2.2]],
+                'lon': [[95.5, 920], [95.5, 1225], [96.5, 1300], [100, 1300], [101.5, 1130], [101.5, 920]],
+            },
+        },
+        'hp': {
+            get 'bounds' () {return aircraft['r22']['standard']['bounds'];},
+        },
+        'alpha':{
+            'bounds':{
+                'lat': [[95.5, -0.8], [95.5, 1], [98, 2.6], [101.5, 1.2], [101.5, -0.7], [97.5, -2.2], [97, -2.2]],
+                'lon': [[95.5, 920], [95.5, 1275], [96.5, 1370], [100, 1370], [101.5, 1175], [101.5, 920]],
+            },
+        },
+        'beta':{
+            get 'bounds' () {return aircraft['r22']['alpha']['bounds'];},
+        },
+        'beta2':{
+            get 'bounds' () {return aircraft['r22']['alpha']['bounds'];},
+        },
+    },
+    'r44': {
+        'astro':{
+            'bounds':{
+                'lat': [[92, -3], [92, 3], [100, 3], [102.5, 1.5], [102.5, -1.5], [100, -3]],
+                'lon': [[92, 1550], [92, 2200], [93, 2400], [98, 2400], [102.5, 2000], [102.5, 1550]],
+            },
+        },
+        'raven':{
+            get 'bounds' () {return aircraft['r44']['astro']['bounds'];},
+        },
+        'raven2':{
+            get 'bounds' () {return aircraft['r44']['astro']['bounds'];},
+        },
+    },
+};
+
+function updateAircraft() {
+    var divobj = document.getElementById('models');
+    var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var typehtml = [];
+    for (var model in aircraft[type]) {
+        if (aircraft[type].hasOwnProperty(model)) {
+            typehtml.push("<label>" + model + "</label><input type='radio' name='model' value='" + model + "' onchange='updateModel()'>");
+        };
+    };
+    divobj.innerHTML = typehtml.join('\n');
+};
+
+function updateModel() {
+    var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var model = theForm.elements["model"].value;
+    latcoordinates = aircraft[type][model]['bounds']['lat']
+    loncoordinates = aircraft[type][model]['bounds']['lon']
+    updatePage();
+};
+
 function updateTotals(latarm, lonarm, weight) {
     weights = weights + weight;
     lonmoments = lonmoments + lonarm*weight;
@@ -259,6 +321,7 @@ function updatePage(){
     bookmarkLink();
 };
 function pageLoad(){
+    updateAircraft();
     var theForm = document.forms["balanceform"];
     var items = ["bem", "latemptycofg", "lonemptycofg", "pilot", "passenger1", "main", "aux", "dualsinstalled", "leftdoorinstalled", "rightdoorinstalled"]
     for (var i=0, item; item=items[i]; i++) {
