@@ -255,8 +255,8 @@ var aircraft = {
                 },
             },
         },
-        get 'raven' () {return aircraft['r22']['astro'];},
-        get 'raven2' () {return aircraft['r22']['astro'];},
+        get 'raven' () {return aircraft['r44']['astro'];},
+        get 'raven2' () {return aircraft['r44']['astro'];},
     },
 };
 
