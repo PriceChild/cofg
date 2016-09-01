@@ -504,7 +504,7 @@ function bookmarkLink(){
 
     var divobj = document.getElementById('bookmark');
     var html = "Bookmark this link to save this aircraft's configuration: <a href='?"
-    var items = ["bem", "lat", "lon"]
+    var items = ["type", "model", "bem", "lat", "lon"]
     for (var i=0, item; item=items[i]; i++) {
         html = html + item + "=" + theForm.elements[item].value + "&"
     };
@@ -518,14 +518,25 @@ function updatePage(){
     bookmarkLink();
 };
 function pageLoad(){
-    var theForm = document.forms["balanceform"];
-    var items = ["type", "model"];
-    for (var i=0, item; item=items[i]; i++) {
-        var value = getParameter(item);
-        if(value){
-            theForm.elements[item].value = value;
+    var divobj = document.getElementById('types');
+    var typehtml = [];
+    for (var type in aircraft) {
+        if (aircraft.hasOwnProperty(type)) {
+            typehtml.push("<label>" + type + "</label><input type='radio' name='type' value='" + type + "' onchange='updateAircraft()'>");
         };
     };
-    updateAircraft();
-    updatePage();
+    divobj.innerHTML = typehtml.join('\n');
+
+    var theForm = document.forms["balanceform"];
+    var value = getParameter("type");
+    if(value){
+        theForm.elements["type"].value = value;
+        updateAircraft();
+        var theForm = document.forms["balanceform"];
+        var value = getParameter("model");
+        if(value){
+            theForm.elements["model"].value = value;
+            updateModel();
+        };
+    };
 };
