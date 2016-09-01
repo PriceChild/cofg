@@ -376,6 +376,8 @@ function calculateTotals() {
     latmoments = 0;
 
     var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var model = theForm.elements["model"].value;
 
     var bem = parseFloat(theForm.elements["bem"].value);
     var latemptycofg = parseFloat(theForm.elements["lat"].value);
@@ -383,45 +385,17 @@ function calculateTotals() {
 
     updateTotals(latemptycofg, lonemptycofg, bem);
 
-    var dualsinstalled = theForm.elements["duals"].checked;
-    if(!dualsinstalled)
-    {
-
-        var dualsweight = -2.6;
-        var dualslatarm = -12.88;
-        var dualslonarm = 66.27;
-        updateTotals(dualslatarm, dualslonarm, dualsweight);
+    for (var key in aircraft[type][model]['loadingpoints'] ) {
+        item = aircraft[type][model]['loadingpoints'][key];
+        value = parseFloat(theForm.elements[key].value);
+        updateTotals(item['lat'], item['lon'], value);
     };
 
-    var pilotweight = parseFloat(theForm.elements["pilot"].value);
-    var pilotlatarm = 10.7;
-    var pilotlonarm = 78;
-    updateTotals(pilotlatarm, pilotlonarm, pilotweight);
-
-    var passengerweight = parseFloat(theForm.elements["passenger1"].value);
-    var passengerlatarm = -9.3;
-    var passengerlonarm = 78;
-    updateTotals(passengerlatarm, passengerlonarm, passengerweight);
-
-
-    var leftdoorinstalled = theForm.elements["leftdoor"].checked;
-    if(!leftdoorinstalled)
-    {
-
-        var doorweight = -5.2;
-        var doorlatarm = 21;
-        var doorlonarm = 77.5;
-        updateTotals(doorlatarm, doorlonarm, doorweight);
-    };
-
-    var rightdoorinstalled = theForm.elements["rightdoor"].checked;
-    if(!rightdoorinstalled)
-    {
-
-        var doorweight = -5.2;
-        var doorlatarm = -21;
-        var doorlonarm = 77.5;
-        updateTotals(doorlatarm, doorlonarm, doorweight);
+    for (var key in aircraft[type][model]['extras'] ) {
+        item = aircraft[type][model]['extras'][key];
+        if (!theForm.elements[key].checked === item['includedinbem']) {
+            updateTotals(item['lat'], item['lon'], -item['weight']); // TODO: This needs checking...
+        };
     };
 
     zfgweights = weights;
@@ -431,15 +405,11 @@ function calculateTotals() {
     var divobj = document.getElementById('emptyCOFG');
     divobj.innerHTML = "Empty COFG: " + zfg['lon'].toFixed(2) + ", " + zfg['lat'].toFixed(2) + " - " + zfgweights + "lbs";
 
-    var mainweight = parseFloat(theForm.elements["main"].value)*6;
-    var mainlatarm = -11;
-    var mainlonarm = 108.6;
-    updateTotals(mainlatarm, mainlonarm, mainweight);
-
-    var auxweight = parseFloat(theForm.elements["aux"].value)*6;
-    var auxlatarm = 11.2;
-    var auxlonarm = 103.8;
-    updateTotals(auxlatarm, auxlonarm, auxweight);
+    for (var key in aircraft[type][model]['fuel'] ) {
+        item = aircraft[type][model]['fuel'][key];
+        value = parseFloat(theForm.elements[key].value);
+        updateTotals(item['lat'], item['lon'], value*6); // USG -> LBS
+    };
 
     togwweights = weights;
     togw['lat'] = latmoments/weights;
