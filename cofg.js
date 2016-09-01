@@ -257,6 +257,15 @@ var aircraft = {
     },
 };
 
+function clearForm() {
+    for (var item of ["defaults", "loadingpoints", "fuel", "extras"]) {
+        var divObj = document.getElementById(item);
+        while (divObj.hasChildNodes()) {
+            divObj.removeChild(divObj.lastChild);
+        }
+    };
+};
+
 function updateAircraft() {
     var divobj = document.getElementById('models');
     var theForm = document.forms["balanceform"];
@@ -268,6 +277,7 @@ function updateAircraft() {
         };
     };
     divobj.innerHTML = typehtml.join('\n');
+    clearForm();
 };
 
 function updateModel() {
@@ -275,10 +285,9 @@ function updateModel() {
     var type = theForm.elements["type"].value;
     var model = theForm.elements["model"].value;
 
+    clearForm();
+
     var defaults = document.getElementById('defaults');
-    while (defaults.hasChildNodes()) {
-        defaults.removeChild(defaults.lastChild);
-    }
     for (var item of ["bem", "lat", "lon"]) {
         defaults.appendChild(document.createTextNode(item + ":"));
         var input = document.createElement("input");
@@ -297,9 +306,6 @@ function updateModel() {
     };
 
     var loadingpoints = document.getElementById('loadingpoints');
-    while (loadingpoints.hasChildNodes()) {
-        loadingpoints.removeChild(loadingpoints.lastChild);
-    }
     for (var key in aircraft[type][model]['loadingpoints'] ) {
         loadingpoints.appendChild(document.createTextNode(key + ":"));
         var input = document.createElement("input");
@@ -318,9 +324,6 @@ function updateModel() {
     };
 
     var loadingpoints = document.getElementById('fuel');
-    while (loadingpoints.hasChildNodes()) {
-        loadingpoints.removeChild(loadingpoints.lastChild);
-    }
     for (var key in aircraft[type][model]['fuel'] ) {
         fuel.appendChild(document.createTextNode(key + ":"));
         var input = document.createElement("input");
@@ -338,9 +341,6 @@ function updateModel() {
     };
 
     var loadingpoints = document.getElementById('extras');
-    while (loadingpoints.hasChildNodes()) {
-        loadingpoints.removeChild(loadingpoints.lastChild);
-    }
     for (var key in aircraft[type][model]['extras'] ) {
         extras.appendChild(document.createTextNode(key + ":"));
         var input = document.createElement("input");
