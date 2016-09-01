@@ -10,37 +10,14 @@
             <label>R44</label>
             <input type="radio" name="type" value="r44" onchange="pageLoad()">
             <div id="models"></div>
-
             <legend>Aircraft Details:</legend>
-            <label>BEM</label>
-            <input type="number" step="0.1" id="bem" name="bem" onchange="updatePage()"/>
-            <br/>
-            <label>Empty cofg lat</label>
-            <input type="number" step="0.1" id="lat" name="lat" onchange="updatePage()"/>
-            <label>Empty cofg lon</label>
-            <input type="number" step="0.1" id="lon" name="lon" onchange="updatePage()"/>
-
+            <div id="defaults"></div>
             <legend>Occupant & baggage weights:</legend>
-            <label>Pilot</label>
-            <input type="number" id="pilot" name="pilot" onchange="updatePage()"/>
-            <label>Passenger</label>
-            <input type="number" id="passenger1" name="passenger1" onchange="updatePage()"/>
-            <br/>
+            <div id="loadingpoints"></div>
             <legend>Fuel:</legend>
-            <label>Main</label>
-            <input type="number" id="main" name="main" max="18.3" min="0" onchange="updatePage()"/>
-            <label>Aux</label>
-            <input type="number" id="aux" name="aux" max="9.7" min="0" onchange="updatePage()"/>
-            <br/>
-
+            <div id="fuel"></div>
             <legend>Extras:</legend>
-            <input type="checkbox" id="duals" name="duals" onclick="updatePage()"/>
-            Duals Installed?
-            <br/>
-            <input type="checkbox" id="leftdoor" name="leftdoor" onclick="updatePage()"/>
-            Left Door On?
-            <input type="checkbox" id="rightdoor" name="rightdoor" onclick="updatePage()"/>
-            Right Door On?
+            <div id="extras"></div>
         </form>
         <p>
         <div id="emptyCOFG"></div>

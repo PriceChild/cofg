@@ -105,11 +105,13 @@ var aircraft = {
                     'lat': 10.7,
                     'lon': 78, //TODO: WARN ABOUT S/N prior to 0256 which require 79in
                     'default': 185,
+                    'max': 240,
                 },
                 'passenger1': {
                     'lat': -9.3,
                     'lon': 78,
                     'default': 0,
+                    'max': 240,
                 },
             },
             'fuel':{
@@ -187,21 +189,25 @@ var aircraft = {
                     'lat': 12.2,
                     'lon': 49.5,
                     'default': 185,
+                    'max': 300,
                 },
                 'passenger1': {
                     'lat': -10.4,
                     'lon': 49.5,
                     'default': 0,
+                    'max': 300,
                 },
                 'passenger2': {
                     'lat': 12.2,
                     'lon': 79.5,
                     'default': 0,
+                    'max': 300,
                 },
                 'passenger3': {
                     'lat': -12.2,
                     'lon': 79.5,
                     'default': 0,
+                    'max': 300,
                 },
             },
             'fuel':{
@@ -274,49 +280,87 @@ function updateModel() {
     latcoordinates = aircraft[type][model]['bounds']['lat']
     loncoordinates = aircraft[type][model]['bounds']['lon']
 
-    var items = ["bem", "lat", "lon"]
-    for (var i=0, item; item=items[i]; i++) {
+    var defaults = document.getElementById('defaults');
+    while (defaults.hasChildNodes()) {
+        defaults.removeChild(defaults.lastChild);
+    }
+    for (var item of ["bem", "lat", "lon"]) {
+        defaults.appendChild(document.createTextNode(item + ":"));
+        var input = document.createElement("input");
+        input.type = "number";
+        input.name = item;
+        input.id = item;
+        input.step = 0.1;
+        input.setAttribute("onchange", "updatePage()");
         var value = getParameter(item);
         if(value){
-            theForm.elements[item].value = value;
+            input.value = value;
         } else {
-            theForm.elements[item].value = aircraft[type][model]['defaults'][item];
+            input.value = aircraft[type][model]['defaults'][item];
         };
+        defaults.appendChild(input);
     };
 
-    for (var key in aircraft[type][model]['loadingpoints']) {
-        if (aircraft[type][model]['loadingpoints'].hasOwnProperty(key)){
-            var value = getParameter(key);
-            if (value){
-                theForm.elements[key].value = value;
-            } else {
-                theForm.elements[key].value = aircraft[type][model]['loadingpoints'][key]['default'];
-            };
+    var loadingpoints = document.getElementById('loadingpoints');
+    while (loadingpoints.hasChildNodes()) {
+        loadingpoints.removeChild(loadingpoints.lastChild);
+    }
+    for (var key in aircraft[type][model]['loadingpoints'] ) {
+        loadingpoints.appendChild(document.createTextNode(key + ":"));
+        var input = document.createElement("input");
+        input.type = "number";
+        input.name = key;
+        input.id = key;
+        input.max = aircraft[type][model]['loadingpoints'][key]['max'];
+        input.setAttribute("onchange", "updatePage()");
+        var value = getParameter(key);
+        if(value){
+            input.value = value;
+        } else {
+            input.value = aircraft[type][model]['loadingpoints'][key]['default'];
         };
+        loadingpoints.appendChild(input);
     };
 
-    for (var key in aircraft[type][model]['fuel']) {
-        if (aircraft[type][model]['fuel'].hasOwnProperty(key)){
-            var value = getParameter(key);
-            if (value){
-                theForm.elements[key].value = value;
-            } else {
-                theForm.elements[key].value = aircraft[type][model]['fuel'][key]['default'];
-            };
+    var loadingpoints = document.getElementById('fuel');
+    while (loadingpoints.hasChildNodes()) {
+        loadingpoints.removeChild(loadingpoints.lastChild);
+    }
+    for (var key in aircraft[type][model]['fuel'] ) {
+        fuel.appendChild(document.createTextNode(key + ":"));
+        var input = document.createElement("input");
+        input.type = "number";
+        input.name = key;
+        input.id = key;
+        input.setAttribute("onchange", "updatePage()");
+        var value = getParameter(key);
+        if(value){
+            input.value = value;
+        } else {
+            input.value = aircraft[type][model]['fuel'][key]['default'];
         };
+        fuel.appendChild(input);
     };
 
-    for (var key in aircraft[type][model]['extras']) {
-        if (aircraft[type][model]['extras'].hasOwnProperty(key)){
-            var value = getParameter(key);
-            if (value){
-                theForm.elements[key].value = value;
-            } else {
-                theForm.elements[key].checked = aircraft[type][model]['extras'][key]['includedinbem'];
-            };
+    var loadingpoints = document.getElementById('extras');
+    while (loadingpoints.hasChildNodes()) {
+        loadingpoints.removeChild(loadingpoints.lastChild);
+    }
+    for (var key in aircraft[type][model]['extras'] ) {
+        extras.appendChild(document.createTextNode(key + ":"));
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.name = key;
+        input.id = key;
+        input.setAttribute("onchange", "updatePage()");
+        var value = getParameter(key);
+        if(value){
+            input.value = value;
+        } else {
+            input.checked = aircraft[type][model]['extras'][key]['includedinbem'];
         };
+        extras.appendChild(input);
     };
-
 
     updatePage();
 };
