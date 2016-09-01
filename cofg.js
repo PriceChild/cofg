@@ -14,9 +14,6 @@ var togw = {
     'lon': 0,
 }
 
-var latcoordinates = [[95.5, -0.8], [95.5, 1], [98, 2.6], [101.5, 1.2], [101.5, -0.7], [97.5, -2.2], [97, -2.2]];
-var loncoordinates = [[95.5, 920], [95.5, 1275], [96.5, 1370], [100, 1370], [101.5, 1175], [101.5, 920]];
-
 /*
    pointinpolygon was fetched from the following URL on 2016-08-29:
    https://github.com/substack/point-in-polygon/blob/master/index.js
@@ -277,8 +274,6 @@ function updateModel() {
     var theForm = document.forms["balanceform"];
     var type = theForm.elements["type"].value;
     var model = theForm.elements["model"].value;
-    latcoordinates = aircraft[type][model]['bounds']['lat']
-    loncoordinates = aircraft[type][model]['bounds']['lon']
 
     var defaults = document.getElementById('defaults');
     while (defaults.hasChildNodes()) {
@@ -426,7 +421,6 @@ function calculateCoordinates(canvas, max, min, value){
     return alongpercentage*canvas;
 };
 function drawGraph(){
-
     var theForm = document.forms["balanceform"];
     var type = theForm.elements["type"].value;
     var model = theForm.elements["model"].value;
@@ -489,6 +483,13 @@ function drawGraph(){
     };
 };
 function checkLimits(){
+    var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var model = theForm.elements["model"].value;
+
+    var latcoordinates = aircraft[type][model]['bounds']['lat']
+    var loncoordinates = aircraft[type][model]['bounds']['lon']
+
     var inlimits = pointinpolygon([zfg['lon'], zfg['lat']], latcoordinates) && pointinpolygon([togw['lon'], togw['lat']], latcoordinates) && pointinpolygon([zfg['lon'], zfgweights], loncoordinates) && pointinpolygon([togw['lon'], togwweights], loncoordinates);
     var divobj = document.getElementById('inlimits');
     if(inlimits){
