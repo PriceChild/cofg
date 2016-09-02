@@ -1,4 +1,7 @@
 CACHE MANIFEST
 # 20160902T142000Z
 CACHE:
-cofg.js
+js/cofg.js
+js/aircraft.js
+js/pointinpolygon.js
+js/getParameter.js
