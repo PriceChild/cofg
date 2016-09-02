@@ -352,7 +352,13 @@ function addTableItem(item, weight, lonarm, latarm, celltype) {
     var table = document.getElementById('mnb');
     var tablerow = document.createElement('tr');
 
+    var firstcolumn = true;
     for (var key of [item, weight, lonarm, latarm, lonarm*weight, latarm*weight]) {
+        if (!firstcolumn) {
+            key = key.toFixed(2);
+        } else {
+            firstcolumn = false;
+        };
         var cell = document.createElement(celltype);
         cell.appendChild(document.createTextNode(key));
         tablerow.appendChild(cell);
