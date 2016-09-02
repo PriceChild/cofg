@@ -1,19 +1,3 @@
-var weights = 0;
-var lonmoments = 0;
-var latmoments = 0;
-
-var zfgweights = 0;
-var zfg = {
-    'lat': 0,
-    'lon': 0,
-}
-
-var togwweights = 0;
-var togw = {
-    'lat': 0,
-    'lon': 0,
-}
-
 /*
    pointinpolygon was fetched from the following URL on 2016-08-29:
    https://github.com/substack/point-in-polygon/blob/master/index.js
@@ -360,15 +344,39 @@ function updateModel() {
     updatePage();
 };
 
-function updateTotals(latarm, lonarm, weight) {
-    weights = weights + weight;
-    lonmoments = lonmoments + lonarm*weight;
-    latmoments = latmoments + latarm*weight;
+function addTableItem(item, weight, lonarm, latarm, celltype) {
+    if (weight == 0) {
+        return;
+    };
+    celltype = typeof celltype !== 'undefined' ? celltype : 'td';
+    var table = document.getElementById('mnb');
+    var tablerow = document.createElement('tr');
+
+    for (var key of [item, weight, lonarm, latarm, lonarm*weight, latarm*weight]) {
+        var cell = document.createElement(celltype);
+        cell.appendChild(document.createTextNode(key));
+        tablerow.appendChild(cell);
+    };
+    table.appendChild(tablerow);
 };
+
 function calculateTotals() {
-    weights = 0;
-    lonmoments = 0;
-    latmoments = 0;
+    var calculation = document.getElementById('calculation');
+    while (calculation.hasChildNodes()) {
+        calculation.removeChild(calculation.lastChild);
+    };
+
+    var table = document.createElement('table');
+    table.setAttribute('border', '1');
+    table.setAttribute('id', 'mnb');
+    var tablerow = document.createElement('tr');
+    for (var key of ["item", "weight", "lonarm", "latarm", "lonmoment", "latmoment"]) {
+        var th = document.createElement('th');
+        th.innerHTML = key;
+        tablerow.appendChild(th);
+    };
+    table.appendChild(tablerow);
+    calculation.appendChild(table);
 
     var theForm = document.forms["balanceform"];
     var type = theForm.elements["type"].value;
@@ -378,41 +386,52 @@ function calculateTotals() {
     var latemptycofg = parseFloat(theForm.elements["lat"].value);
     var lonemptycofg = parseFloat(theForm.elements["lon"].value);
 
-    updateTotals(latemptycofg, lonemptycofg, bem);
+    addTableItem("BEM", bem, lonemptycofg, latemptycofg);
+    var weights = bem;
+    var lonmoments = bem*lonemptycofg;
+    var latmoments = bem*latemptycofg;
 
     for (var key in aircraft[type][model]['loadingpoints'] ) {
         item = aircraft[type][model]['loadingpoints'][key];
         value = parseFloat(theForm.elements[key].value);
-        updateTotals(item['lat'], item['lon'], value);
+        addTableItem(key, value, item['lon'], item['lat']);
+        weights += value;
+        lonmoments += value*item['lon'];
+        latmoments += value*item['lat'];
     };
 
     for (var key in aircraft[type][model]['extras'] ) {
         item = aircraft[type][model]['extras'][key];
         if (!theForm.elements[key].checked === item['includedinbem']) {
-            updateTotals(item['lat'], item['lon'], -item['weight']); // TODO: This needs checking...
+            value = -item['weight'] // TODO: This negation needs checking...
+            addTableItem(key, value, item['lon'], item['lat']);
+            lonmoments += value*item['lon'];
+            latmoments += value*item['lat'];
         };
     };
 
-    zfgweights = weights;
-    zfg['lat'] = latmoments/weights;
+    var zfg = {};
+    zfg['weight'] = weights;
     zfg['lon'] = lonmoments/weights;
-
-    var divobj = document.getElementById('emptyCOFG');
-    divobj.innerHTML = "Empty COFG: " + zfg['lon'].toFixed(2) + ", " + zfg['lat'].toFixed(2) + " - " + zfgweights + "lbs";
+    zfg['lat'] = latmoments/weights;
+    addTableItem("ZFG", zfg['weight'], zfg['lon'], zfg['lat'], 'th');
 
     for (var key in aircraft[type][model]['fuel'] ) {
         item = aircraft[type][model]['fuel'][key];
-        value = parseFloat(theForm.elements[key].value);
-        updateTotals(item['lat'], item['lon'], value*6); // USG -> LBS
+        value = parseFloat(theForm.elements[key].value)*6; // USG -> LBS
+        addTableItem(key, value, item['lon'], item['lat']);
+        weights += value;
+        lonmoments += value*item['lon'];
+        latmoments += value*item['lat'];
     };
 
-    togwweights = weights;
+    var togw = {};
+    togw['weight'] = weights;
     togw['lat'] = latmoments/weights;
     togw['lon'] = lonmoments/weights;
+    addTableItem("TOGW", togw['weight'], togw['lon'], togw['lat'], 'th');
 
-    var divobj = document.getElementById('fullCOFG');
-    divobj.innerHTML = "Fueled COFG: " + togw['lon'].toFixed(2) + ", " + togw['lat'].toFixed(2) + " - " + togwweights + "lbs";
-
+    return [zfg, togw];
 };
 function calculateCoordinates(canvas, max, min, value){
     var realwidth = max-min;
@@ -420,7 +439,7 @@ function calculateCoordinates(canvas, max, min, value){
     var alongpercentage = realdiff/realwidth;
     return alongpercentage*canvas;
 };
-function drawGraph(){
+function drawGraph(zfg, togw){
     var theForm = document.forms["balanceform"];
     var type = theForm.elements["type"].value;
     var model = theForm.elements["model"].value;
@@ -470,8 +489,8 @@ function drawGraph(){
         ctx.stroke();
 
         if (dimension == 'lon'){
-            var zfgy = zfgweights;
-            var togwy = togwweights;
+            var zfgy = zfg['weight'];
+            var togwy = togw['weight'];
         } else {
             var zfgy = zfg['lat'];
             var togwy = togw['lat'];
@@ -482,7 +501,7 @@ function drawGraph(){
         ctx.stroke();
     };
 };
-function checkLimits(){
+function checkLimits(zfg, togw){
     var theForm = document.forms["balanceform"];
     var type = theForm.elements["type"].value;
     var model = theForm.elements["model"].value;
@@ -490,7 +509,7 @@ function checkLimits(){
     var latcoordinates = aircraft[type][model]['bounds']['lat']
     var loncoordinates = aircraft[type][model]['bounds']['lon']
 
-    var inlimits = pointinpolygon([zfg['lon'], zfg['lat']], latcoordinates) && pointinpolygon([togw['lon'], togw['lat']], latcoordinates) && pointinpolygon([zfg['lon'], zfgweights], loncoordinates) && pointinpolygon([togw['lon'], togwweights], loncoordinates);
+    var inlimits = pointinpolygon([zfg['lon'], zfg['lat']], latcoordinates) && pointinpolygon([togw['lon'], togw['lat']], latcoordinates) && pointinpolygon([zfg['lon'], zfg['weight']], loncoordinates) && pointinpolygon([togw['lon'], togw['weight']], loncoordinates);
     var divobj = document.getElementById('inlimits');
     if(inlimits){
         divobj.innerHTML = "<div style='color:green'>All OK!</div>";
@@ -512,9 +531,11 @@ function bookmarkLink(){
     divobj.innerHTML = html;
 };
 function updatePage(){
-    calculateTotals();
-    drawGraph();
-    checkLimits();
+    var cog = calculateTotals();
+    var zfg = cog[0];
+    var togw = cog[1];
+    drawGraph(zfg, togw);
+    checkLimits(zfg, togw);
     bookmarkLink();
 };
 function pageLoad(){
