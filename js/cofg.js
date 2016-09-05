@@ -244,9 +244,9 @@ function drawGraph(zfg, togw){
         var canvasheight = c.scrollHeight;
 
         ctx.beginPath();
-        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, bounds[0][0]),calculateCoordinates(canvasheight, maxh, minh, bounds[0][1]));
+        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, bounds[0][0]),canvasheight-calculateCoordinates(canvasheight, maxh, minh, bounds[0][1]));
         for (var i=1, coordinate; coordinate = bounds[i]; i++) {
-            ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, coordinate[0]),calculateCoordinates(canvasheight, maxh, minh, coordinate[1]));
+            ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, coordinate[0]),canvasheight-calculateCoordinates(canvasheight, maxh, minh, coordinate[1]));
         };
         ctx.closePath();
         ctx.stroke();
@@ -259,8 +259,8 @@ function drawGraph(zfg, togw){
             var togwy = togw['lat'];
         }
         ctx.beginPath();
-        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, zfg['lon']),calculateCoordinates(canvasheight, maxh, minh, zfgy));
-        ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, togw['lon']),calculateCoordinates(canvasheight, maxh, minh, togwy));
+        ctx.moveTo(calculateCoordinates(canvaswidth, maxw, minw, zfg['lon']),canvasheight-calculateCoordinates(canvasheight, maxh, minh, zfgy));
+        ctx.lineTo(calculateCoordinates(canvaswidth, maxw, minw, togw['lon']),canvasheight-calculateCoordinates(canvasheight, maxh, minh, togwy));
         ctx.stroke();
     };
 };
