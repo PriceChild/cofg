@@ -38,7 +38,7 @@ function updateModel() {
         input.step = 0.1;
         input.setAttribute("onchange", "updatePage()");
         var value = getParameter(item);
-        if(value){
+        if(value && type == getParameter("type") && model == getParameter("model")){
             input.value = value;
         } else {
             input.value = aircraft[type][model]['defaults'][item];
