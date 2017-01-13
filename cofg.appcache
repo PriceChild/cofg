@@ -1,6 +1,8 @@
 CACHE MANIFEST
-# 20160905T140000Z
+# 20170113T093000Z
 CACHE:
+index.html
+cofg.html
 js/cofg.js
 js/aircraft.js
 js/pointinpolygon.js
