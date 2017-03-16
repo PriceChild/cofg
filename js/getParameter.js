@@ -5,11 +5,13 @@
    It was distributed with the following license:
 
    MIT © Ryan Burgess (http://github.com/ryanburgess)
+
+   Modified slightly to act on fragments.
 */
 function getParameter(name){
   'use strict';
   var queryDict = {};
-  var queries = location.search.substr(1).split('&');
+  var queries = location.hash.substr(1).split('&');
   for (var i=0; i<queries.length; i++) {
     queryDict[queries[i].split('=')[0]] = decodeURIComponent(queries[i].split('=')[1]);
   } 
