@@ -300,6 +300,56 @@ function bookmarkLink(){
     html = html + hash + "'>linky</a>";
     divobj.innerHTML = html;
 };
+function regList(){
+    var regstore = localStorage.getItem("reglist");
+    if (regstore){
+        var reglist = JSON.parse(regstore);
+    } else {
+        var reglist = [];
+    }
+    return reglist;
+};
+
+function saveReg(){
+    var theForm = document.forms["saveform"];
+
+    var reg = theForm.elements["reg"].value;
+
+    reglist = regList();
+
+    if (reglist.indexOf(reg) === -1) {
+        reglist.push(reg);
+        localStorage.setItem("reglist", JSON.stringify(reglist));
+    }
+
+    localStorage.setItem("config-" + reg, JSON.stringify(location.hash));
+};
+function loadReg(){
+    var theForm = document.forms["loadform"];
+
+    var reg = theForm.elements["reg"].value;
+
+    hash = JSON.parse(localStorage.getItem("config-" + reg));
+
+    if(history.pushState) {
+            history.pushState(null, null, hash);
+    }
+    else {
+            location.hash = hash;
+    }
+    pageLoad();
+};
+function populateLoadForm(){
+    var reglistobj = document.getElementById('reglist');
+    var reglist = regList();
+    var reghtml = ["<select name='reg'>"];
+    for (var i = 0; i < reglist.length; i++) {
+        var reg = reglist[i];
+        reghtml.push("<option value='" + reg + "'>" + reg + "</option>");
+    };
+    reghtml.push("</select>");
+    reglistobj.innerHTML = reghtml.join('\n');
+};
 function updatePage(){
     var cog = calculateTotals();
     var zfg = cog[0];
@@ -343,4 +393,11 @@ function pageLoad(){
             updateModel();
         };
     };
+
+    if (typeof(Storage) !== "undefined") {
+        populateLoadForm();
+    } else {
+        var divobj = document.getElementById('storageform');
+        divobj.innerHTML = "";
+    }
 };

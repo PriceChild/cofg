@@ -43,5 +43,15 @@
         <canvas id="loncanvas" width="320" height="250" style="border:1px solid #d3d3d3;background:#ffffff"></canvas>
         <canvas id="latcanvas" width="320" height="250" style="border:1px solid #d3d3d3;background:#ffffff"></canvas>
         <div id="bookmark"></div>
+        <div id="storageforms">
+            <form id="saveform">
+                <input name="reg" id="reg"></input>
+                <button type="button" onclick="saveReg()">Save</button>
+            </form>
+            <form id="loadform">
+                <div id="reglist"></div>
+                <button type="button" onclick="loadReg()">Load</button>
+            </form>
+        </div>
     </body>
 </html>
