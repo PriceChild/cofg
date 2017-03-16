@@ -285,12 +285,19 @@ function bookmarkLink(){
     var theForm = document.forms["balanceform"];
 
     var divobj = document.getElementById('bookmark');
-    var html = "Bookmark this link to save this aircraft's configuration: <a href='?"
-    var items = ["type", "model", "bem", "lat", "lon"]
+    var html = "Bookmark this link to save this aircraft's configuration: <a href='";
+    var items = ["type", "model", "bem", "lat", "lon"];
+    var hash = "#";
     for (var i=0, item; item=items[i]; i++) {
-        html = html + item + "=" + theForm.elements[item].value + "&"
+        hash = hash + item + "=" + theForm.elements[item].value + "&"
     };
-    html = html + "'>linky</a>";
+    if(history.pushState) {
+            history.pushState(null, null, hash);
+    }
+    else {
+            location.hash = hash;
+    }
+    html = html + hash + "'>linky</a>";
     divobj.innerHTML = html;
 };
 function updatePage(){
