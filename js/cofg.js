@@ -323,6 +323,7 @@ function saveReg(){
     }
 
     localStorage.setItem("config-" + reg, JSON.stringify(location.hash));
+    populateLoadForm();
 };
 function loadReg(){
     var theForm = document.forms["loadform"];
