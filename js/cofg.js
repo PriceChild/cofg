@@ -308,7 +308,20 @@ function updatePage(){
     checkLimits(zfg, togw);
     bookmarkLink();
 };
+function convertQueryToFragments(){
+    if (location.search){
+        if(history.pushState) {
+            history.pushState(null, null, location.href.replace('?', '#'));
+        }
+        else {
+            location.href = location.href.replace('?', '#');
+        }
+        var divobj = document.getElementById('warninglocation');
+        divobj.innerHTML = "<strong style='color:red'>URLS have changed. Please update the bookmark or link you just used.</strong>";
+    };
+}
 function pageLoad(){
+    convertQueryToFragments();
     var divobj = document.getElementById('types');
     var typehtml = [];
     for (var type in aircraft) {
