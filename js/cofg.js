@@ -35,7 +35,7 @@ function updateModel() {
         input.type = "number";
         input.name = item;
         input.id = item;
-        input.step = 0.1;
+        input.step = 0.01;
         input.setAttribute("onchange", "updatePage()");
         var value = getParameter(item);
         if(value && type == getParameter("type") && model == getParameter("model")){
