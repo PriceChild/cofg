@@ -155,8 +155,8 @@ function calculateTotals() {
     var latmoments = bem*latemptycofg;
 
     for (var key in aircraft[type][model]['loadingpoints'] ) {
-        item = aircraft[type][model]['loadingpoints'][key];
-        value = parseFloat(theForm.elements[key].value);
+        var item = aircraft[type][model]['loadingpoints'][key];
+        var value = parseFloat(theForm.elements[key].value);
         addTableItem(key, value, item['lon'], item['lat']);
         weights += value;
         lonmoments += value*item['lon'];
@@ -164,10 +164,14 @@ function calculateTotals() {
     };
 
     for (var key in aircraft[type][model]['extras'] ) {
-        item = aircraft[type][model]['extras'][key];
+        var item = aircraft[type][model]['extras'][key];
         if (!theForm.elements[key].checked === item['includedinbem']) {
-            value = -item['weight'] // TODO: This negation needs checking...
+            var value = item['weight'];
+            if (item['includedinbem']) {
+                value = -value
+            }
             addTableItem(key, value, item['lon'], item['lat']);
+            weights += value;
             lonmoments += value*item['lon'];
             latmoments += value*item['lat'];
         };
@@ -180,8 +184,8 @@ function calculateTotals() {
     addTableItem("ZFG", zfg['weight'], zfg['lon'], zfg['lat'], 'th');
 
     for (var key in aircraft[type][model]['fuel'] ) {
-        item = aircraft[type][model]['fuel'][key];
-        value = parseFloat(theForm.elements[key].value)*6; // USG -> LBS
+        var item = aircraft[type][model]['fuel'][key];
+        var value = parseFloat(theForm.elements[key].value)*6; // USG -> LBS
         addTableItem(key, value, item['lon'], item['lat']);
         weights += value;
         lonmoments += value*item['lon'];
