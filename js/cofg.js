@@ -122,6 +122,22 @@ function addTableItem(item, weight, lonarm, latarm, celltype) {
     };
     table.appendChild(tablerow);
 };
+function fuelHint(zfg) {
+    var fuelhint = document.getElementById('fuelhint');
+    var maxweight = 0;
+    var theForm = document.forms["balanceform"];
+    var type = theForm.elements["type"].value;
+    var model = theForm.elements["model"].value;
+    for (var bound in aircraft[type][model]['bounds']['lon']) {
+        weight = aircraft[type][model]['bounds']['lon'][bound][1];
+        if (weight > maxweight) {
+            maxweight = weight;
+        };
+    };
+    var weightremaining = maxweight - zfg['weight'];
+    var lbsperusg = 6;
+    fuelhint.innerHTML = "<div style='color:grey'>With " + weightremaining + "lbs remaining, you <i>may</i> be able to carry " + (weightremaining/lbsperusg).toFixed(1) + " USG, but you <b>must</b> check that this leaves you within all other c of g limits, especially fore/aft.</div>";
+};
 
 function calculateTotals() {
     var calculation = document.getElementById('calculation');
@@ -359,6 +375,7 @@ function updatePage(){
     var cog = calculateTotals();
     var zfg = cog[0];
     var togw = cog[1];
+    fuelHint(zfg);
     drawGraph(zfg, togw);
     checkLimits(zfg, togw);
     bookmarkLink();
